@@ -30,42 +30,7 @@
 
 		<!-- Header -->
 		<header class="site-header header-s1 is-sticky">
-            
-<div class="tradingview-widget-container">
-<div class="tradingview-widget-container__widget"></div>
-<div class="tradingview-widget-copyright"><a href="https://www.tradingview.com/" rel="noopener" target="_blank"></a> </div>
-<script type="text/javascript" src="../s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
-                {
-                "symbols": [
-                  {
-                    "proName": "FOREXCOM:SPXUSD",
-                    "title": "S&P 500"
-                  },
-                  {
-                    "proName": "FOREXCOM:NSXUSD",
-                    "title": "Nasdaq 100"
-                  },
-                  {
-                    "proName": "FX_IDC:EURUSD",
-                    "title": "EUR/USD"
-                  },
-                  {
-                    "proName": "BITSTAMP:BTCUSD",
-                    "title": "BTC/USD"
-                  },
-                  {
-                    "proName": "BITSTAMP:ETHUSD",
-                    "title": "ETH/USD"
-                  }
-                ],
-                "showSymbolLogo": true,
-                "colorTheme": "dark",
-                "isTransparent": true,
-                "displayMode": "adaptive",
-                "locale": "en"
-              }
-                </script>
-</div>
+ 
 			<!-- Topbar -->
 			<div class="topbar">
 				<div class="container">
@@ -123,9 +88,24 @@
 						</ul>
 					</nav>
 					<!-- #end MainNav -->
-				</div>
-                <div id="google_translate_element" style="float:left;margin-top:-50px"></div>
-			</div>
+<div id="google_translate_element" style="position: fixed; top: 450px; left: 3; right: 0; z-index: 9999; background: white; text-align: center; padding: 5px; border-bottom: 1px solid #ccc;">
+  <span style="font-weight: bold; margin-right: 10px;"> </span>
+</div>
+
+<script type="text/javascript">
+function googleTranslateElementInit() {
+  new google.translate.TranslateElement({
+    pageLanguage: 'en',
+    includedLanguages: 'en,es,fr,de,zh-CN,ar,ru,hi,pt,it,ja',
+    layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+  }, 'google_translate_element');
+}
+</script>
+
+<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+
+
 			<!-- End Navbar -->
 			
 
