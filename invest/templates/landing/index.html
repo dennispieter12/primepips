@@ -727,59 +727,66 @@ Facts</h2>
 </div>
 <!-- End Section -->
 
-  
-<script data-cfasync="false" src="#"></script>
-<style type="text/css">
-    .mgm {
-        border-radius: 7px;
-        position: fixed;
-        z-index: 999;
-        bottom: 45%;
-        right: 50px;
-        background: #dcd2ce;
-        padding: 10px 27px;
-        box-shadow: 0px 5px 13px 0px rgba(0, 0, 0, .3);
-    }
+  <!-- Load jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-    .mgm a {
-        font-weight: 700;
-        display: block;
-        color: #1c8e51;
-    }
+<!-- Notification Box -->
+<style>
+  .mgm {
+    position: fixed;
+    bottom: 100px;
+    left: 30px;
+    background: rgba(0, 0, 0, 0.85);
+    color: white;
+    padding: 15px 20px;
+    border-radius: 10px;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    z-index: 9999;
+    display: none;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+  }
 
-    .mgm a,
-    .mgm a:active {
-        transition: all .2s ease;
-        color: #1c8e51;
-    }
+  .mgm a {
+    color: #00ffcc;
+    text-decoration: underline;
+  }
 </style>
 
-<div class="mgm" style="display: none;">
-    <div class="txt" style="color:black;"></div>
+<div class="mgm">
+  <div class="txt"></div>
 </div>
 
+<!-- Script -->
 <script type="text/javascript">
-    var listCountries = ['USA', 'USA', 'Germany', 'France', 'Indonesia', 'USA', 'Philipenes', 'USA', 'Canada', 'Indonesia', 'Philipenes', 'UK', 'United Kingdom', 'USA', 'Indonesia', 'USA', 'Sweden', 'USA', 'USA', 'Italy', 'USA', 'United Kingdom', 'USA', 'Indonesia', 'United Kingdom', 'United Kingdom', 'Indonesia', 'Philipenes', 'USA', 'United Kingdom', 'USA', 'USA', 'Netherlands', 'Indonesia', 'Philipenes', 'Israel', 'United Kingdom'];
-    var listPlans = ['$500', '$1,500', '$1,000', '$10,000', '$15,000','$2,000', '$3,000', '$4,000', '$600', '$700', '$2,500'];
-    var transarray = ['has <b>withdrawn</b>', 'just <b>invested</b>', 'is <b>trading with</b>'];
-    let interval = Math.floor(Math.random() * (4000 - 800 + 1) + 8000);
-    var run = setInterval(request, interval);
+  var listCountries = ['USA', 'Germany', 'France', 'Indonesia', 'Philippines', 'Canada', 'UK', 'Sweden', 'Italy', 'Netherlands', 'Israel'];
+  var listPlans = ['$500', '$1,500', '$1,000', '$10,000', '$15,000', '$2,000', '$3,000', '$4,000', '$600', '$700', '$2,500'];
+  var transarray = ['has <b>withdrawn</b>', 'just <b>invested</b>', 'is <b>trading with</b>'];
 
-    function request() {
-        clearInterval(run);
-        let interval = Math.floor(Math.random() * (4000 - 800 + 1) + 8000);
-        var country = listCountries[Math.floor(Math.random() * listCountries.length)];
-        var transtype = transarray[Math.floor(Math.random() * transarray.length)];
-        var plan = listPlans[Math.floor(Math.random() * listPlans.length)];
-        var msg = 'Someone from <b>' + country + '</b> ' + transtype + ' <a href="javascript:void(0);" onclick="javascript:void(0);">' + plan + '</a>';
-        $(".mgm .txt").html(msg);
-        $(".mgm").stop(true).fadeIn(300);
-        window.setTimeout(function () {
-            $(".mgm").stop(true).fadeOut(300);
-        }, 10000);
-        run = setInterval(request, interval);
-    }
+  function showNotification() {
+    var country = listCountries[Math.floor(Math.random() * listCountries.length)];
+    var transtype = transarray[Math.floor(Math.random() * transarray.length)];
+    var plan = listPlans[Math.floor(Math.random() * listPlans.length)];
+    var msg = 'Someone from <b>' + country + '</b> ' + transtype + ' <a href="javascript:void(0);">' + plan + '</a>';
+
+    $(".mgm .txt").html(msg);
+    $(".mgm").stop(true).fadeIn(500);
+
+    setTimeout(function () {
+      $(".mgm").fadeOut(500);
+    }, 8000);
+
+    // Repeat after a random interval
+    let nextInterval = Math.floor(Math.random() * (8000 - 4000 + 1)) + 4000;
+    setTimeout(showNotification, nextInterval);
+  }
+
+  // Start the cycle
+  $(document).ready(function () {
+    setTimeout(showNotification, 2000);
+  });
 </script>
+
  
 
 <!-- Section Footer -->
