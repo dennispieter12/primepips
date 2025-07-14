@@ -1027,11 +1027,11 @@ def forgot_password(request):
             reset_link = request.build_absolute_uri(f'/reset-password/{uid}/{token}/')
             
             # Email content
-            subject = 'Password Reset - Profitlynx Investment Platform'
+            subject = 'Password Reset - CryptoInvest Investment Platform'
             message = f"""
             Hello {user.first_name or user.username},
             
-            You requested a password reset for your Profitlynx account.
+            You requested a password reset for your CryptoInvest account.
             
             Click the link below to reset your password:
             {reset_link}
@@ -1041,14 +1041,14 @@ def forgot_password(request):
             If you didn't request this reset, please ignore this email.
             
             Best regards,
-            Profitlynx Investment Team
+            CryptoInvest Investment Team
             """
             
             # Send email
             send_mail(
                 subject,
                 message,
-                settings.DEFAULT_FROM_EMAIL if hasattr(settings, 'DEFAULT_FROM_EMAIL') else 'noreply@profitlynx.com',
+                settings.DEFAULT_FROM_EMAIL if hasattr(settings, 'DEFAULT_FROM_EMAIL') else 'noreply@cryptoinvest.com',
                 [email],
                 fail_silently=False,
             )
