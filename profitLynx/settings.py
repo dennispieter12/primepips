@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-c0qz2c0u9ky69v8@27o54t&7l3l0(^*0tedzop8&+z%fii(tx#
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['www.primepips.site', 'cryptoinvest-6hnf.onrender.com', '127.0.0.1']
+ALLOWED_HOSTS = ['www.primepips.site', 'primepips.onrender.com', '127.0.0.1']
 
 AUTH_USER_MODEL = 'invest.User'
 
