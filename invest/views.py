@@ -1,3 +1,7 @@
+# ...existing code...
+from decimal import Decimal, InvalidOperation
+from django.db import transaction
+# ...existing code...
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
@@ -550,7 +554,7 @@ def admin_deposits(request):
                     tier=deposit.investment_tier,
                     amount=deposit.amount,
                     start_date=timezone.now(),
-                    end_date=timezone.now() + timedelta(hours=deposit.investment_tier.duration_days)
+                    end_date=timezone.now() + timedelta(days=deposit.investment_tier.duration_days)  # Changed from hours to days
                 )
                 
                 # Update transaction status
@@ -607,6 +611,121 @@ def admin_deposits(request):
             messages.error(request, f'Error processing deposit: {str(e)}')
         
         return redirect('admin_deposits')
+
+    # GET request handling - fetch deposits and statistics
+    deposits = DepositRequest.objects.select_related(
+        'user', 'cryptocurrency', 'investment_tier', 'processed_by'
+    ).order_by('-created_at')
+    
+    # Calculate statistics
+    today = timezone.now().date()
+    
+    # Today's statistics
+    approved_today = DepositRequest.objects.filter(
+        processed_at__date=today,
+        status='APPROVED'
+    ).aggregate(
+        count=models.Count('id'),
+        amount=models.Sum('amount')
+    )
+    
+    rejected_today = DepositRequest.objects.filter(
+        processed_at__date=today,
+        status='REJECTED'
+    ).aggregate(
+        count=models.Count('id'),
+        amount=models.Sum('amount')
+    )
+    
+    # Total statistics
+    total_deposits = DepositRequest.objects.aggregate(
+        count=models.Count('id'),
+        amount=models.Sum('amount')
+    )
+    
+    # Pending deposits total
+    pending_deposits = DepositRequest.objects.filter(status='PENDING')
+    total_pending = pending_deposits.aggregate(amount=models.Sum('amount'))['amount'] or 0
+    
+    context = {
+        'deposits': deposits,
+        'total_pending': total_pending,
+        'approved_today_count': approved_today['count'] or 0,
+        'approved_today_amount': approved_today['amount'] or 0,
+        'rejected_today_count': rejected_today['count'] or 0,
+        'rejected_today_amount': rejected_today['amount'] or 0,
+        'total_deposits_count': total_deposits['count'] or 0,
+        'total_deposits_amount': total_deposits['amount'] or 0,
+    }
+    
+    return render(request, 'admins/deposits.html', context)
+
+
+
+# (placed after admin_deposits view and before admin_investments view)
+@user_passes_test(is_admin)
+def add_funds(request):
+    """
+    Admin view: add funds to a user's account.
+    Creates an APPROVED DEPOSIT transaction and triggers balance recalculation.
+    """
+    users = User.objects.filter(is_staff=False).order_by('username')
+
+    if request.method == 'POST':
+        user_id = request.POST.get('user')
+        amount_raw = request.POST.get('amount')
+        note = request.POST.get('note', '').strip()
+
+        # Validate inputs
+        if not user_id:
+            messages.error(request, 'Please select a user.')
+            return redirect('add_funds')
+
+        try:
+            amount = Decimal(amount_raw)
+        except (TypeError, InvalidOperation):
+            messages.error(request, 'Invalid amount.')
+            return redirect('add_funds')
+
+        if amount <= 0:
+            messages.error(request, 'Amount must be greater than 0.')
+            return redirect('add_funds')
+
+        user = get_object_or_404(User, pk=user_id)
+
+        try:
+            with transaction.atomic():
+                # Create APPROVED deposit transaction
+                Transaction.objects.create(
+                    user=user,
+                    transaction_type='DEPOSIT',
+                    amount=amount,
+                    status='APPROVED',
+                    # if your Transaction model uses a different field name for notes, adjust/remove
+                    notes=note if hasattr(Transaction, 'notes') else ''
+                )
+
+                # Recalculate stored balances using existing helper if available
+                try:
+                    user.update_balances()
+                except Exception:
+                    # Fallback: attempt to update common balance fields directly
+                    if hasattr(user, 'total_deposited'):
+                        user.total_deposited = (user.total_deposited or Decimal('0.00')) + amount
+                    if hasattr(user, 'balance'):
+                        user.balance = (user.balance or Decimal('0.00')) + amount
+                    user.save()
+        except Exception as e:
+            messages.error(request, f'Error adding funds: {e}')
+            return redirect('add_funds')
+
+        messages.success(request, f'Successfully added {amount} to {user.username}.')
+        return redirect('admin_dashboard')  # change to your preferred admin landing page name
+
+    return render(request, 'admins/add_funds.html', {'users': users})
+# ...existing code... 
+    
+
     
     # Get all deposits with related data
     deposits = DepositRequest.objects.select_related(
@@ -1027,11 +1146,11 @@ def forgot_password(request):
             reset_link = request.build_absolute_uri(f'/reset-password/{uid}/{token}/')
             
             # Email content
-            subject = 'Password Reset - CryptoInvest Investment Platform'
+            subject = 'Password Reset - Profitlynx Investment Platform'
             message = f"""
             Hello {user.first_name or user.username},
             
-            You requested a password reset for your CryptoInvest account.
+            You requested a password reset for your Profitlynx account.
             
             Click the link below to reset your password:
             {reset_link}
@@ -1041,14 +1160,14 @@ def forgot_password(request):
             If you didn't request this reset, please ignore this email.
             
             Best regards,
-            CryptoInvest Investment Team
+            Profitlynx Investment Team
             """
             
             # Send email
             send_mail(
                 subject,
                 message,
-                settings.DEFAULT_FROM_EMAIL if hasattr(settings, 'DEFAULT_FROM_EMAIL') else 'noreply@cryptoinvest.com',
+                settings.DEFAULT_FROM_EMAIL if hasattr(settings, 'DEFAULT_FROM_EMAIL') else 'noreply@profitlynx.com',
                 [email],
                 fail_silently=False,
             )

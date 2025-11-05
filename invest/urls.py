@@ -1,3 +1,4 @@
+# ...existing code...
 from django.urls import path
 from . import views
 
@@ -15,6 +16,9 @@ urlpatterns = [
     path('privacy/', views.privacy, name='privacy'),
     path('terms/', views.terms, name='terms'),
     path('contact/', views.contact, name='contact'),
+
+    # changed to avoid colliding with Django admin/ namespace
+    path('admins/add-funds/', views.add_funds, name='add_funds'),
 
     # Authentication
     path('signin/', views.signin, name='signin'),
@@ -51,3 +55,4 @@ urlpatterns = [
 
 # ✅ Serve media files always (both in development and production)
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+# ...existing code...

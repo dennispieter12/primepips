@@ -1,0 +1,40 @@
+<!-- ...existing code... -->
+{% extends "admins/base.html" %}
+{% load static %}
+{% block content %}
+<div class="container">
+  <h3>Add Funds to User</h3>
+
+  {% if messages %}
+    {% for m in messages %}
+      <div class="alert alert-{{ m.tags }}">{{ m }}</div>
+    {% endfor %}
+  {% endif %}
+
+  <form method="post">
+    {% csrf_token %}
+    <div class="form-group">
+      <label for="user">User</label>
+      <select name="user" id="user" class="form-control" required>
+        <option value="">-- select user --</option>
+        {% for u in users %}
+          <option value="{{ u.id }}">{{ u.username }} ({{ u.email }})</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="amount">Amount (USD)</label>
+      <input type="number" name="amount" id="amount" step="0.01" class="form-control" required>
+    </div>
+
+    <div class="form-group">
+      <label for="note">Note (optional)</label>
+      <textarea name="note" id="note" class="form-control" rows="2"></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-success">Add Funds</button>
+    <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary">Cancel</a>
+  </form>
+</div>
+{% endblock %}
